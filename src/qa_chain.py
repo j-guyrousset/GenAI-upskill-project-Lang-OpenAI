@@ -2,7 +2,8 @@ from langchain_openai import ChatOpenAI
 
 from langchain_core.prompts import ChatPromptTemplate
 
-from langchain import create_stuff_documents_chain, create_retrieval_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains.retrieval import create_retrieval_chain
 
 
 def build_qa_chain(vector_store):

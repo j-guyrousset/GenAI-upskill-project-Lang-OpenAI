@@ -12,7 +12,7 @@ load_dotenv()
 
 def main():
 
-    file_path = "data/sample.pdf"
+    file_path = "data/sample_01.pdf"
 
     # 1 Load PDF
     documents = load_pdf(file_path)
