@@ -14,18 +14,28 @@ def build_qa_chain(vector_store):
     )
 
     prompt = ChatPromptTemplate.from_template(
-        """
-You are a helpful assistant.
+"""
+You are assisting a recruitment team evaluating resumes
+for a .NET developer position.
 
-Use the provided context to answer the question.
+Use the provided resume context to answer the recruiter’s question.
 
-If the answer is not in the context, say you don't know.
+Focus on:
+- .NET technologies
+- years of experience
+- project experience
+- Azure or cloud experience
+- seniority or leadership roles
+
+If the information is not in the resumes, say you do not know.
 
 Context:
 {context}
 
-Question:
+Recruiter question:
 {input}
+
+Answer clearly and concisely.
 """
     )
 

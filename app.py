@@ -55,8 +55,7 @@ def main():
 
         print("\n-----------------------------------")
         print("Options:")
-        print("1 - Find best document for criteria")
-        print("2 - Ask a question about the documents")
+        print("1 - Find best resume for .Net developer role")
         print("exit - Quit")
         print("-----------------------------------")
 
@@ -68,22 +67,12 @@ def main():
         # Option 1: Document ranking
         if choice == "1":
 
-            criteria = input("\nEnter document selection criteria:\n")
+            criteria ="\nFind the best .NET developer resume\n"
 
             result = rank_documents(criteria, classifications)
 
             print("\nBest document match:\n")
             print(result)
-
-        # Option 2: Ask questions (RAG)
-        elif choice == "2":
-
-            question = input("\nEnter your question:\n")
-
-            response = rag_chain.invoke({"input": question})
-
-            print("\nAnswer:\n")
-            print(response["answer"])
 
         else:
             print("Invalid option.")
