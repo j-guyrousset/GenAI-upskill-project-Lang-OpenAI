@@ -3,41 +3,34 @@ from langchain_openai import ChatOpenAI
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
-def rank_documents(criteria, classifications):
+def rank_documents(position, job_profile, classifications):
 
     prompt = f"""
-You are assisting a recruitment team selecting a .NET developer.
+You are assisting a recruitment team.
 
-The candidates have already been analyzed and scored.
+The goal is to identify the best candidate for this position:
 
-Use the following weighting model:
+{position}
 
-.NET skills weight = 35%
-Experience weight = 25%
-.NET projects weight = 20%
-Complementary skills weight = 10%
-Seniority weight = 10%
+Job requirements:
+{job_profile}
 
-Calculate a final score for each candidate using:
-
-Total Score =
-(.NET Skills * 0.35) +
-(Experience * 0.25) +
-(Projects * 0.20) +
-(Complementary Skills * 0.10) +
-(Seniority * 0.10)
-
-Then rank all candidates from best to worst.
-
-Explain briefly why the top candidate is the best match.
-
-Recruitment criteria:
-{criteria}
-
-Candidate data:
+Candidate profiles:
 {classifications}
 
-Return your answer in this format:
+Evaluate candidates based on:
+
+1. Match between candidate technologies and required technologies
+2. Relevant experience
+3. Relevant project experience
+4. Complementary skills
+5. Seniority
+
+Score each candidate from 0 to 100.
+
+Then rank the candidates from best to worst.
+
+Return the result in this format:
 
 1. Candidate Name - Score - Explanation
 2. Candidate Name - Score - Explanation

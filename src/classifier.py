@@ -10,57 +10,33 @@ def classify_document(text):
     )
 
     prompt = f"""
-You are assisting a recruitment team.
+You are analyzing a resume.
 
-Analyze the following resume and extract structured information
-about the candidate for a .NET developer role.
+Extract structured information about the candidate.
 
-Evaluate the candidate on the following criteria:
+Focus on:
+- Programming languages
+- Frameworks
+- Cloud technologies
+- Databases
+- DevOps tools
+- Total years of experience
+- Major projects
+- Seniority indicators (lead, architect, manager)
 
-1. .NET Technical Skills
-Look for:
-C#, .NET Core, ASP.NET, Web API, Entity Framework.
-
-Score from 0 to 5.
-
-2. Years of Experience
-Estimate total professional experience relevant to software development.
-
-Score from 0 to 5:
-0 = less than 1 year
-1 = 1-2 years
-2 = 2-4 years
-3 = 4-6 years
-4 = 6-10 years
-5 = more than 10 years
-
-3. Number of .NET Projects
-Estimate number of projects using .NET technologies.
-
-Score from 0 to 5.
-
-4. Complementary Skills
-Look for:
-Azure, SQL Server, Docker, Microservices, CI/CD, DevOps.
-
-Score from 0 to 5.
-
-5. Seniority Indicators
-Look for:
-Architecture responsibilities, leadership, mentoring, technical lead roles.
-
-Score from 0 to 5.
-
-Return ONLY valid JSON in the following format:
+Return ONLY valid JSON with this format:
 
 {{
 "candidate_name": "...",
-"net_skills_score": number,
-"years_experience_score": number,
-"dotnet_projects_score": number,
-"complementary_skills_score": number,
-"seniority_score": number,
-"summary": "short explanation"
+"years_experience": number,
+"technical_skills": [],
+"frameworks": [],
+"cloud_technologies": [],
+"databases": [],
+"devops_tools": [],
+"key_projects": "...",
+"seniority_indicators": "...",
+"summary": "short summary of the candidate"
 }}
 
 Resume:

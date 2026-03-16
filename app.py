@@ -1,24 +1,32 @@
 from dotenv import load_dotenv
+import os
 #load environment variables from .env file
 load_dotenv()
-import os
+
+if not os.getenv("OPENAI_API_KEY"):
+    raise ValueError("OPENAI_API_KEY not found. Check your .env file.")
+
 from pathlib import Path
 
 from src.document_indexer import load_all_pdfs, classify_documents
 from src.splitter import split_documents
 from src.embeddings import create_embeddings
 from src.vector_store import create_vector_store
+from src.job_analyzer import analyze_job
 from src.qa_chain import build_qa_chain
 from src.ranker import rank_documents
 
 
 def main():
-    print("\n--- PDF Analyzer Started ---\n")
+    
+    print("\n=== AI Resume Analyzer ===\n")
 
-    #file_path = "data/sample_01.pdf"
+    # --------------------------------------------------
+    # Step 1: Load resumes
+    # --------------------------------------------------
 
-    # 1 Load all PDFs in the data folder (default arg in load_all_pdfs)
-    print("\nLoading pdf files...")
+    print("Loading resumes from /data folder...\n")
+
     documents = load_all_pdfs("data")
 
     if not documents:
@@ -27,55 +35,105 @@ def main():
 
     print(f"{len(documents)} pages loaded.\n")
 
-    # 2 Classify documents based on user criteria
-    print("\nDocument classifications:")
+    # --------------------------------------------------
+    # Step 2: Extract candidate profiles
+    # --------------------------------------------------
+
+    print("Analyzing candidate resumes...\n")
+
     classifications = classify_documents(documents)
 
-    for file_name, classification in classifications.items():
-        print(f"\n{file_name}")
-        print(classification)
+    print("Candidate profiles extracted:\n")
 
-    # 3 Split Documents into chunks
-    print("\nSplitting documents...")
+    for candidate, profile in classifications.items():
+        print(f"{candidate}")
+        print(profile)
+        print("")
+
+    # --------------------------------------------------
+    # Step 3: Build RAG system for resume Q&A
+    # --------------------------------------------------
+
+    print("Preparing document search system...\n")
+
     chunks = split_documents(documents)
 
-    # 4 Create embeddings
-    print("Creating embeddings...")
     embeddings = create_embeddings()
 
-    # 5 Create vector store
-    print("Building vector database...")
     vector_store = create_vector_store(chunks, embeddings)
 
-    # 6 Build RAG chain
     rag_chain = build_qa_chain(vector_store)
 
-    # 7️ Main interaction loop
+    print("System ready.\n")
+
+    # --------------------------------------------------
+    # Main user interaction loop
+    # --------------------------------------------------
+
     while True:
 
-        print("\n-----------------------------------")
+        print("\n----------------------------------")
         print("Options:")
-        print("1 - Find best resume for .Net developer role")
+        print("1 - Rank candidates for a position")
+        print("2 - Ask a question about resumes")
         print("exit - Quit")
-        print("-----------------------------------")
+        print("----------------------------------")
 
         choice = input("\nSelect option: ")
 
         if choice.lower() == "exit":
+            print("\nGoodbye.\n")
             break
 
-        # Option 1: Document ranking
+        # --------------------------------------------------
+        # Option 1: Rank candidates for a job
+        # --------------------------------------------------
+
         if choice == "1":
 
-            criteria ="\nFind the best .NET developer resume\n"
+            position = input(
+                "\nWhich candidate best fits the position?\n"
+            )
 
-            result = rank_documents(criteria, classifications)
+            print("\nAnalyzing job requirements...\n")
 
-            print("\nBest document match:\n")
-            print(result)
+            job_profile = analyze_job(position)
+
+            print("Job profile:")
+            print(job_profile)
+            print("")
+
+            print("Ranking candidates...\n")
+
+            ranking = rank_documents(
+                position,
+                job_profile,
+                classifications
+            )
+
+            print("\n=== Candidate Ranking ===\n")
+
+            print(ranking)
+
+        # --------------------------------------------------
+        # Option 2: Ask questions about resumes
+        # --------------------------------------------------
+
+        elif choice == "2":
+
+            question = input(
+                "\nEnter your question about the candidates:\n"
+            )
+
+            response = rag_chain.invoke({"input": question})
+
+            print("\nAnswer:\n")
+
+            print(response["answer"])
 
         else:
-            print("Invalid option.")
+
+            print("Invalid option. Please try again.")
 
 
 if __name__ == "__main__":

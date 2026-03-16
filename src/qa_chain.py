@@ -15,19 +15,18 @@ def build_qa_chain(vector_store):
 
     prompt = ChatPromptTemplate.from_template(
 """
-You are assisting a recruitment team evaluating resumes
-for a .NET developer position.
+You are assisting a recruitment team evaluating candidates.
 
-Use the provided resume context to answer the recruiter’s question.
+Use the provided resume context to answer the recruiter questions.
 
 Focus on:
-- .NET technologies
+- technologies used
 - years of experience
 - project experience
-- Azure or cloud experience
-- seniority or leadership roles
+- cloud or infrastructure skills
+- seniority
 
-If the information is not in the resumes, say you do not know.
+If the information is not available, say you do not know.
 
 Context:
 {context}
