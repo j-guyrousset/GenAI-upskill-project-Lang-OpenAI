@@ -57,11 +57,8 @@ def main():
     print("Preparing document search system...\n")
 
     chunks = split_documents(documents)
-
     embeddings = create_embeddings()
-
     vector_store = create_vector_store(chunks, embeddings)
-
     rag_chain = build_qa_chain(vector_store)
 
     print("System ready.\n")

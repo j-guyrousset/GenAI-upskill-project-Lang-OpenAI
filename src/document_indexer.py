@@ -16,7 +16,7 @@ def load_all_pdfs(folder_path="data"):
             docs = load_pdf(path)
 
             for doc in docs:
-                doc.metadata["source"] = file
+                doc.metadata["candidate"] = file
 
             all_docs.extend(docs)
 
