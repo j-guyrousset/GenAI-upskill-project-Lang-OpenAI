@@ -17,6 +17,7 @@ def load_all_pdfs(folder_path="data"):
 
             for doc in docs:
                 doc.metadata["candidate"] = file
+                doc.metadata["source"] = path
 
             all_docs.extend(docs)
 
@@ -25,21 +26,31 @@ def load_all_pdfs(folder_path="data"):
 
 def classify_documents(documents):
 
-    file_map = {}
+    """
+    Analyze each candidate resume using the LLM classifier
+    and return structured candidate profiles.
+    """
 
+    candidate_texts = {}
+
+    # Group pages belonging to the same candidate
     for doc in documents:
 
-        file_name = doc.metadata["source"]
+        candidate = doc.metadata["candidate"]
 
-        if file_name not in file_map:
-            file_map[file_name] = doc.page_content
+        if candidate not in candidate_texts:
+            candidate_texts[candidate] = ""
+
+        candidate_texts[candidate] += doc.page_content + "\n"
 
     classifications = {}
 
-    for file_name, text in file_map.items():
+    for candidate, text in candidate_texts.items():
 
-        result = classify_document(text)
+        print(f"Classifying {candidate}...")
 
-        classifications[file_name] = result
+        profile = classify_document(text)
+
+        classifications[candidate] = profile
 
     return classifications
