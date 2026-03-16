@@ -13,6 +13,7 @@ from src.splitter import split_documents
 from src.embeddings import create_embeddings
 from src.vector_store import create_vector_store
 from src.job_analyzer import analyze_job
+from src.job_skill_extractor import extract_job_skills
 from src.qa_chain import build_qa_chain
 from src.ranker import rank_documents
 
@@ -45,16 +46,16 @@ def main():
 
     print("Candidate profiles extracted:\n")
 
-    for candidate, profile in classifications.items():
-        print(f"{candidate}")
-        print(profile)
-        print("")
+   #for candidate, profile in classifications.items():
+    #    print(f"{candidate}")
+    #    print(profile)
+    #    print("")
 
-    # --------------------------------------------------
-    # Step 3: Build RAG system for resume Q&A
+     # --------------------------------------------------
+    # Step 3: Build vector search index
     # --------------------------------------------------
 
-    print("Preparing document search system...\n")
+    print("Preparing vector search index...\n")
 
     chunks = split_documents(documents)
     embeddings = create_embeddings()
@@ -62,7 +63,6 @@ def main():
     rag_chain = build_qa_chain(vector_store)
 
     print("System ready.\n")
-
     # --------------------------------------------------
     # Main user interaction loop
     # --------------------------------------------------
@@ -93,19 +93,43 @@ def main():
             )
 
             print("\nAnalyzing job requirements...\n")
-
             job_profile = analyze_job(position)
 
-            print("Job profile:")
-            print(job_profile)
-            print("")
+            print("Extracting job skills...\n")
+            skills = extract_job_skills(position)
 
-            print("Ranking candidates...\n")
+            print("Skills detected:", skills)
+            print("\nSearching for relevant candidates...\n")
+
+            query = " ".join(skills)
+            retrieved_docs = vector_store.similarity_search(
+                query,
+                k=20
+            )
+
+            candidate_set = set()
+
+            for doc in retrieved_docs:
+                candidate_set.add(doc.metadata["candidate"])
+
+            print("Relevant candidates found:")
+            print(candidate_set)
+
+            # --------------------------------------------------
+            # Filter candidate profiles
+            # --------------------------------------------------
+
+            filtered_profiles = {
+                k: v for k, v in classifications.items()
+                if k in candidate_set
+            }
+
+            print("\nRanking candidates...\n")
 
             ranking = rank_documents(
                 position,
                 job_profile,
-                classifications
+                filtered_profiles
             )
 
             print("\n=== Candidate Ranking ===\n")
